@@ -2,11 +2,16 @@
 // const nextConfig = {};
 
 // export default nextConfig;
-export const images = {
-  remotePatterns: [
-    {
-      protocol: "https",
-      hostname: "openweathermap.org",
-    },
-  ],
+const nextConfig = {
+  // Configuración de imágenes
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "openweathermap.org",
+      },
+    ],
+  },
 };
+
+export default nextConfig;
