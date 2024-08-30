@@ -35,6 +35,7 @@ export default function Main() {
 
   useEffect(() => {
     (async () => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       setPlace(await useInitialLocation());
     })();
   }, []);
