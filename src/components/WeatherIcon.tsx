@@ -6,11 +6,12 @@ import Image from "next/image";
 interface WeatherIconProps {
   iconName: string;
   altText?: string;
+  className?: string;
 }
 
-export default function WeatherIcon({ iconName, altText = "Weather Icon" }: WeatherIconProps) {
+export default function WeatherIcon({ className, iconName, altText = "Weather Icon" }: WeatherIconProps) {
   return (
-    <div className={cn("relative h-20 w-20")}>
+    <div className={cn("relative h-20 w-20", className)}>
       <Image
         width={100}
         height={100}

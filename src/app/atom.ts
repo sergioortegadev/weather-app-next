@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-export const placeAtom = atom("");
+export const placeAtom = atom("Cordoba");
 
 export const loadingCityAtom = atom(false);
 

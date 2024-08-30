@@ -106,8 +106,8 @@ export default function Navbar({ location }: Props) {
 
   return (
     <>
-      <nav className="shadow-sm sticky top-0 left-0 z-50 bg-white">
-        <div className="max-[400px]:h-12 max-[500px]:h-16 h-20 w-full flex justify-between items-center max-w-7xl px-3 mx-auto">
+      <nav className="shadow-sm sticky top-0 left-0 z-50 bg-white ">
+        <div className="max-[400px]:h-12 max-[500px]:h-16 h-20 w-full flex justify-between items-center max-w-6xl px-3 mx-auto">
           <div className="flex items-center justify-center gap-2">
             <h2 className="text-gray-500 max-[400px]:text-[.8rem] max-[400px]:font-bold text-base min-[500px]:text-xl sm:text-3xl ">
               Weather App
@@ -122,7 +122,7 @@ export default function Navbar({ location }: Props) {
             />
             {!showSearchBox && (
               <button onClick={() => setShowSearchBox(true)} className="flex">
-                <p className="text-slate-900/80 text-xs sm:text-sm">{location}</p>
+                <p className="text-slate-900/80 text-xs sm:text-sm lg:text-xl">{location}</p>
                 <MdOutlineLocationOn className="text-2xl text-gray-600" />
               </button>
             )}
