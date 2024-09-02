@@ -1,20 +1,22 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { showSearchBoxAtom, loadingCityAtom, placeAtom } from "@/app/atom";
-import { format, fromUnixTime, getUnixTime, parseISO } from "date-fns";
+import { format, fromUnixTime, parseISO } from "date-fns";
 import WeatherDetails from "@/components/WeatherDetails";
 import Container from "@/components/Container";
 import ForecastWeatherDetail from "@/components/ForecastWeatherDetail";
 import Navbar from "@/components/Navbar";
 import WeatherIcon from "@/components/WeatherIcon";
-import { convertKelvinToCelsius } from "@/util/convertKelvinToCelsius";
 import { degToCardinalPoint } from "@/util/windDegToCardinalPoints";
 import { getDayOrNightIcon } from "@/util/getDayOrNightIcon";
 import useGetData from "@/helpers/useGetData";
-import useGetGPSLocation from "@/helpers/useGetGPSLocation";
-import useInitialLocation from "@/helpers/useInitialLocation";
+import initialLocation from "@/util/initialLocation";
+import { adjustTemp } from "@/util/adjustTemp";
+import dailyWeather from "@/util/dailyWeather";
+import getDayOrNightBg from "@/util/getDayOrNightBg";
+import Footer from "./Footer";
 
 export default function Main() {
   const [place, setPlace] = useAtom(placeAtom);
@@ -35,21 +37,13 @@ export default function Main() {
 
   useEffect(() => {
     (async () => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      setPlace(await useInitialLocation());
+      setPlace(await initialLocation());
     })();
   }, []);
 
   const uniqueDates = [...new Set(data?.list.map((entry) => new Date(entry.dt * 1000).toISOString().split("T")[0]))];
 
-  const firstDataForEachDate = uniqueDates.map((date) => {
-    return data?.list.find((entry) => {
-      const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
-      const entryTime = new Date(entry.dt * 1000).getHours();
-      return entryDate === date && entryTime >= 6;
-    });
-  });
-  console.log(firstDataForEachDate);
+  const dailyWeatherSummary = dailyWeather(uniqueDates, data);
 
   if (isPending || !cityData)
     return (
@@ -66,41 +60,34 @@ export default function Main() {
         <Navbar location={`${data?.city.name}, ${data?.city.country}`} />
         <main
           onClick={() => setShowSearchBox(false)}
-          className="flex flex-col gap-9 md:px-3 max-w-6xl mx-auto w-full pb-10 md:pt-4 bg-heroday bg-blend-overlay bg-[center_top_-3rem] md:bg-center lg:bg-[center_-20rem] bg-no-repeat bg-cover xl:bg-[length:1280px_1800] bg-fixed "
+          className={`flex flex-col gap-9 md:px-3 max-w-5xl mx-auto w-full pb-10 md:pt-4 ${
+            getDayOrNightBg() ? "bg-heroday" : "bg-heronight"
+          } bg-blend-overlay bg-[center_top_-3rem] md:bg-center lg:bg-[center_-20rem] xl:bg-[center_-26rem] landscape:bg-[center_-18rem] bg-no-repeat bg-cover xl:bg-[length:1024px_1440] bg-fixed `}
         >
           {loadingCity ? (
             <WeatherSkeleton />
           ) : (
             <>
               <section className="flex flex-col space-y-4 px-2 lg:px-0">
-                {/* Today Data - 1st and 2dn bar */}
-
-                {/*<h2 className="flex gap-1 text-2xl items-end">
-                     <p>{format(parseISO(firstData?.dt_txt ?? ""), "EEEE")}</p> 
-                     <p className="text-lg"> - {format(parseISO(firstData?.dt_txt ?? ""), "dd.MM.yyyy")}</p>
-                     </h2>*/}
-
                 {/* 1nd bar */}
                 <div className="space-y-2">
                   <div className="flex justify-end gap-4 mb-36 sm:mb-52 lg:mb-80">
-                    <Container className="w-52 md:w-60 lg:w-[22rem] mt-2 md:mr-8  px-4 items-center justify-center text-gray-700 bg-white/40 border-transparent backdrop-blur-[2px] lg:backdrop-blur-md">
+                    <Container className="w-52 md:w-72 lg:w-[26rem] mt-2 md:mr-4 px-2 items-center justify-center text-gray-700 bg-white/70 border-transparent backdrop-blur-[2px] lg:backdrop-blur-md">
                       {/* tempratures: now - min - max */}
-                      <div className="flex flex-col items-center px-4">
-                        <span className="text-5xl md:text-6xl lg:text-8xl">
-                          {convertKelvinToCelsius(firstData?.main.temp ?? 0)}°
-                        </span>
+                      <div className="flex flex-col items-center lg:pr-4">
+                        <span className="text-5xl md:text-6xl lg:text-8xl">{adjustTemp(firstData?.main.temp)}°</span>
                         <p className="text-xs md:text-lg space-x-1 whitespace-nowrap">
                           <span>Feels like</span>
-                          <span>{convertKelvinToCelsius(firstData?.main.feels_like ?? 0)}°</span>
+                          <span>{adjustTemp(firstData?.main.feels_like)}°</span>
                         </p>
                         <p className="text-sm md:text-xl space-x-2">
-                          <span>{convertKelvinToCelsius(firstData?.main.temp_min ?? 0)}°↓</span>
-                          <span>{convertKelvinToCelsius(firstData?.main.temp_max ?? 0)}°↑</span>
+                          <span>{adjustTemp(firstData?.main.temp_min)}°↓</span>
+                          <span>{adjustTemp(firstData?.main.temp_max)}°↑</span>
                         </p>
                       </div>
                       {/* description and icon */}
-                      <div className="flex flex-col lg:ml-8">
-                        <p className="capitalizem text-sm md:text-xl lg:text-3xl text-center p-0 m-[-.5rem]">
+                      <div className="flex flex-col items-center max-md:w-20 lg:ml-2">
+                        <p className="capitalizem text-sm font-semibold md:text-xl lg:text-3xl text-center p-0 m-[-1rem] lg:my-0">
                           {firstData?.weather[0].description}
                         </p>
                         <WeatherIcon
@@ -129,6 +116,7 @@ export default function Main() {
                 <h2 className="max-md:hidden flex text-2xl p-2 m-0 mt-80 border-transparent shadow-md bg-white/60 rounded-lg w-fit">
                   Now
                 </h2>
+
                 <Container className="max-md:hidden bg-blue-600/80 px-6 gap-4 justify-between overflow-x-auto text-gray-100 py-6">
                   <WeatherDetails
                     visibiliti={firstData?.visibility ? (firstData?.visibility / 1000).toFixed(0) + " km" : undefined}
@@ -142,16 +130,19 @@ export default function Main() {
                 </Container>
 
                 {/* 2st bar */}
-                <Container className="sm:gap-10 px-6 items-center">
+                <h2 className="max-md:hidden flex text-2xl p-2 m-0 mt-80 border-transparent shadow-md bg-white/60 rounded-lg w-fit">
+                  Today
+                </h2>
+                <Container className="sm:gap-4 px-6 items-center">
                   {/* time and weather icon */}
-                  <div className="flex pr-3 gap-6 sm:gap-16 overflow-x-auto w-full justify-between">
+                  <div className="flex pr-3 overflow-x-auto w-full justify-between">
                     {data?.list.slice(0, 7).map((info, i) => (
-                      <div key={i} className="flex flex-col justify-between gap-1 items-center text-xs font-semibold">
+                      <div key={i} className="flex flex-col justify-between items-center text-xs font-semibold">
                         <p className="whitespace-nowrap">{format(parseISO(info.dt_txt), "H:mm")}</p>
 
                         <WeatherIcon iconName={getDayOrNightIcon(info.weather[0].icon, info.dt_txt)} />
 
-                        <p>{convertKelvinToCelsius(info?.main.temp ?? 0)}°</p>
+                        <p>{info?.main.temp.toFixed(0) ?? 0}°</p>
                       </div>
                     ))}
                   </div>
@@ -163,30 +154,42 @@ export default function Main() {
                 <p className="text-2xl px-4 py-2 border-transparent shadow-md bg-white/60 rounded-lg w-fit">
                   6 Days Forecast
                 </p>
-                {firstDataForEachDate.map((d, index) => (
-                  <ForecastWeatherDetail
-                    key={index}
-                    description={d?.weather[0].description ?? ""}
-                    weatherIcon={d?.weather[0].icon ?? "01d"}
-                    date={format(parseISO(d?.dt_txt ?? ""), "dd.MM")}
-                    day={format(parseISO(d?.dt_txt ?? ""), "EEEE")}
-                    feels_like={d?.main.feels_like ?? 0}
-                    temp={d?.main.temp ?? 0}
-                    temp_max={d?.main.temp_max ?? 0}
-                    temp_min={d?.main.temp_min ?? 0}
-                    airPressure={`${d?.main.pressure} hPa`}
-                    humidity={`${d?.main.pressure} %`}
-                    sunrise={format(fromUnixTime(data?.city.sunrise ?? 1702517657), "H:mm")}
-                    sunset={format(fromUnixTime(data?.city.sunset ?? 1702517657), "H:mm")}
-                    visibiliti={firstData?.visibility ? (firstData?.visibility / 1000).toFixed(0) + " km" : undefined}
-                    windSpeed={firstData?.wind.speed ? (firstData?.wind.speed * 3.6).toFixed(0) + " km/h" : undefined}
-                  />
-                ))}
+                <div className="sm:hidden">
+                  {dailyWeatherSummary.map((d, index) => (
+                    <ForecastWeatherDetail
+                      key={index}
+                      date={format(parseISO(d?.date ?? ""), "dd/MM")}
+                      day={format(parseISO(d?.date ?? ""), "EEEE")}
+                      temp_max={d?.tempMax}
+                      temp_min={d?.tempMin}
+                      description={d?.description}
+                      weatherIcon={d?.icon}
+                      display="mobile"
+                    />
+                  ))}
+                </div>
+                <div className="max-sm:hidden">
+                  <Container>
+                    {dailyWeatherSummary.map((d, index) => (
+                      <ForecastWeatherDetail
+                        key={index}
+                        date={format(parseISO(d?.date ?? ""), "dd/MM")}
+                        day={format(parseISO(d?.date ?? ""), "EEEE")}
+                        temp_max={d?.tempMax}
+                        temp_min={d?.tempMin}
+                        description={d?.description}
+                        weatherIcon={d?.icon}
+                        display="desktop"
+                      />
+                    ))}
+                  </Container>
+                </div>
               </section>
             </>
           )}
         </main>
       </div>
+      <Footer />
     </>
   );
 }

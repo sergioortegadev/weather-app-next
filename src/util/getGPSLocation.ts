@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default async function useGetGPSLocation(): Promise<string> {
+export default async function getGPSLocation(): Promise<string> {
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(

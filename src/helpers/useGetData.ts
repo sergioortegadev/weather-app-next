@@ -3,7 +3,7 @@ import { placeAtom } from "@/app/atom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-interface WeatherData {
+export interface WeatherData {
   cod: string;
   message: number;
   cnt: number;
@@ -23,7 +23,7 @@ interface WeatherData {
   };
 }
 
-interface WeatherDetail {
+export interface WeatherDetail {
   dt: number;
   main: {
     temp: number;
@@ -68,7 +68,7 @@ export default function useGetData() {
     queryKey: ["weatherData"],
     queryFn: async () => {
       const response = await axios.get<WeatherData>(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&units=metric` //&cnt=56
       );
 
       return response.data;

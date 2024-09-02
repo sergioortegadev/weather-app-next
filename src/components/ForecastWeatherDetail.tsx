@@ -2,17 +2,16 @@ import React from "react";
 import Container from "./Container";
 import WeatherIcon from "./WeatherIcon";
 import WeatherDetails, { WeatherDetailsProps } from "./WeatherDetails";
-import { convertKelvinToCelsius } from "@/util/convertKelvinToCelsius";
+import { adjustTemp } from "@/util/adjustTemp";
 
 export interface ForecastWeatherDetailProps extends WeatherDetailsProps {
-  weatherIcon: string;
+  weatherIcon?: string;
   date: string;
   day: string;
-  temp: number;
-  feels_like: number;
-  temp_min: number;
-  temp_max: number;
-  description: string;
+  temp_min?: number;
+  temp_max?: number;
+  description?: string;
+  display: string;
 }
 
 export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps) {
@@ -20,36 +19,49 @@ export default function ForecastWeatherDetail(props: ForecastWeatherDetailProps)
     weatherIcon = "No Data",
     date = "No Data",
     day = "No Data",
-    temp,
-    feels_like,
     temp_min,
     temp_max,
     description = "No Data",
+    display = "mobile",
   } = props;
 
   return (
-    <Container className="gap-4">
-      {/* left */}
-      <section className="flex justify-between gap-4 items-center px-4 w-full">
-        <div className="flex items-center">
-          <p className="">{date}</p>
-          <p className="text-sm">{day}</p>
-        </div>
-        <p className="capitalize">{description}</p>
+    <>
+      {display === "mobile" ? (
+        <Container className="gap-4 mb-2">
+          <section className="flex justify-between gap-2 items-center px-2 w-full">
+            <div className="flex flex-col">
+              <div className="text-xl">{day}</div>
+              <div className="text-lg">{date}</div>
+              <p className="capitalize ">{description}</p>
+            </div>
 
-        <div className="flex flex-col justify-center px-4">
-          <p className="text-xs space-x-1 whitespace-nowrap">
+            <div className="flex flex-col justify-center items-center px-4 space-x-1 whitespace-nowrap font-semibold">
+              <WeatherIcon iconName={weatherIcon} />
+              <div className="">
+                <span className="text-lg">{adjustTemp(temp_max)}°↑ </span>
+                <span className="text-lg">{adjustTemp(temp_min)}°↓</span>
+              </div>
+            </div>
+          </section>
+        </Container>
+      ) : (
+        <section className="flex flex-col justify-between items-center w-full md:">
+          <div className="flex flex-col items-center">
+            <div className="font-semibold">{day}</div>
+            <div className="">{date}</div>
+          </div>
+
+          <div className="flex flex-col justify-center items-center space-x-1 whitespace-nowrap font-semibold">
+            <p className="capitalize text-xs md:text-base">{description}</p>
             <WeatherIcon iconName={weatherIcon} />
-            <span>{convertKelvinToCelsius(temp_min ?? 0)}°↓</span>
-            <span>{convertKelvinToCelsius(temp_max ?? 0)}°↑</span>
-          </p>
-        </div>
-      </section>
-
-      {/* right */}
-      {/* <section className="flex overflow-x-auto justify-between gap-4 px-4 w-full pr-10 text-slate-700/90">
-        <WeatherDetails {...props} />
-      </section> */}
-    </Container>
+            <div className="max-md:flex flex-col">
+              <span className="">{adjustTemp(temp_max)}°↑ </span>
+              <span className="">{adjustTemp(temp_min)}°↓</span>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

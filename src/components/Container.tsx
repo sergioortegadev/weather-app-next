@@ -6,7 +6,7 @@ export default function Container(props: React.HTMLProps<HTMLDivElement>) {
     <div
       {...props}
       className={cn(
-        "flex py-4 w-full bg-slate-600/90 text-white border-transparent rounded-xl shadow-md",
+        "flex py-2 w-full bg-slate-500/90 text-white border-transparent rounded-xl shadow-md",
         props.className
       )}
     />

@@ -1,5 +1,8 @@
 # WEATHER APP
 
+<img title="Day Screenshot " style="height: 600px" src="./readme-images/readmeday.png" alt="Next logo"/>
+<img title="Night Screenshot " style="height: 600px" src="./readme-images/readmenight.png" alt="Next logo"/>
+
 ## Deploy
 
 [Online demo](#)
@@ -8,10 +11,13 @@
 
 ## Applied technologies (Stack)
 
-This weather app was created with this tecnologies: [`Next.js`](https://nextjs.org/) with [`TypeScript`](https://www.typescriptlang.org/). Styles from [`Tailwind CSS`](https://tailwindcss.com/) and Icons from [`React Icons`](https://react-icons.github.io/react-icons/). <br/>
-Uses the [Open Weather Map API](https://openweathermap.org/), and the library [React Query](https://tanstack.com/query), it makes fetching, caching, synchronizing and updating server state in your web applications a breeze. In this case I used [axios](https://axios-http.com). <br/>
-For manage Dates I used [date-fns](https://date-fns.org/)
-For manage state [Jotai](https://jotai.org/)
+### This weather app was created with this tecnologies: [`Next.js`](https://nextjs.org/) with [`TypeScript`](https://www.typescriptlang.org/). Styles from [`Tailwind CSS`](https://tailwindcss.com/) and Icons from [`React Icons`](https://react-icons.github.io/react-icons/). <br/>
+
+### Uses the [Open Weather Map API](https://openweathermap.org/), and the library [React Query](https://tanstack.com/query), it makes fetching, caching, synchronizing and updating server state in your web applications a breeze. In this case I used [axios](https://axios-http.com). <br/>
+
+### For manage Dates I used [date-fns](https://date-fns.org/)<br/>
+
+### For state managment [Jotai](https://jotai.org/)
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.5rem">
 <img title="Next.js" style="width: 180px" src="./readme-images/nextjs-logotype-dark-background.svg" alt="Next logo"/>
@@ -52,6 +58,10 @@ To learn more about the developer:
 
 - [Sergio Ortega dev](https://sergioortega.com.ar)
 - [Sergio Ortega's portfolio](https://sergioortega.com.ar/#/portfolio) - an interactive portfolio.
+
+---
+
+#### This app extracts data from the [Open Weather Map API](https://openweathermap.org/).
 
 ---
 

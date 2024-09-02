@@ -5,7 +5,7 @@ import SearchBox from "./SearchBox";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { showSearchBoxAtom, loadingCityAtom, placeAtom } from "@/app/atom";
-import useGetGPSLocation from "@/helpers/useGetGPSLocation";
+import getGPSLocation from "@/util/getGPSLocation";
 
 type Props = { location?: string };
 
@@ -95,7 +95,7 @@ export default function Navbar({ location }: Props) {
 
   async function handleGetGPSLocation() {
     setLoadingCity(true);
-    setPlace(await useGetGPSLocation());
+    setPlace(await getGPSLocation());
     setLoadingCity(false);
     setShowSearchBox(false);
   }
@@ -107,7 +107,7 @@ export default function Navbar({ location }: Props) {
   return (
     <>
       <nav className="shadow-sm sticky top-0 left-0 z-50 bg-white ">
-        <div className="max-[400px]:h-12 max-[500px]:h-16 h-20 w-full flex justify-between items-center max-w-6xl px-3 mx-auto">
+        <div className="max-[400px]:h-12 max-[500px]:h-16 h-20 w-full flex justify-between items-center max-w-5xl px-3 mx-auto">
           <div className="flex items-center justify-center gap-2">
             <h2 className="text-gray-500 max-[400px]:text-[.8rem] max-[400px]:font-bold text-base min-[500px]:text-xl sm:text-3xl ">
               Weather App
@@ -155,8 +155,8 @@ export default function Navbar({ location }: Props) {
 
       {/* Responsive - mobile */}
       {showSearchBox && (
-        <section className="flex max-w-7xl px-3 md:hidden">
-          <div className="relative max-md:mx-auto">
+        <section className="flex max-w-7xl px-3 md:hidden h-20 w-svw">
+          <div className="relative max-md:mx-auto top-1/4">
             <SearchBox
               ref={searchBoxRef}
               value={city}
